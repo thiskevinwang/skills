@@ -1,0 +1,4 @@
+interface:
+  display_name: "Graph This Out"
+  short_description: "Map complex work as a dependency DAG"
+  default_prompt: "Use $graph-this-out to inspect this task and map the expected work as a Mermaid DAG."

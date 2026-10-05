@@ -16,6 +16,8 @@ gh skill install thiskevinwang/skills
 
 - [graph-this-out](skills/graph-this-out/SKILL.md): Map work as a dependency graph.
 - [go-callgraph](skills/go-callgraph/SKILL.md): Build and display Go call graphs.
+- [create-quiz](skills/create-quiz/SKILL.md): Create a quiz and answer key with source citations.
+- [quiz-me](skills/quiz-me/SKILL.md): Learn concepts with one question at a time.
 
 ### Principles
 

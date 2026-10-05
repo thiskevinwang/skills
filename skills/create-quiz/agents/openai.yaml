@@ -1,0 +1,3 @@
+interface:
+  display_name: "Create Quiz"
+  short_description: "Create source-cited university quiz documents"

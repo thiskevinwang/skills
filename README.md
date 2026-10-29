@@ -21,7 +21,7 @@ gh skill install thiskevinwang/skills
 
 ### Principles
 
-These 21 skills preserve the installed instructions and metadata. In Codex,
+These 24 skills use the latest pstack instructions with Codex runtime adaptations. In Codex,
 invoke them explicitly with `$principle-<name>`.
 
 - [principle-boundary-discipline](skills/principle-boundary-discipline/SKILL.md)
@@ -45,6 +45,9 @@ invoke them explicitly with `$principle-<name>`.
 - [principle-sequence-verifiable-units](skills/principle-sequence-verifiable-units/SKILL.md)
 - [principle-subtract-before-you-add](skills/principle-subtract-before-you-add/SKILL.md)
 - [principle-type-system-discipline](skills/principle-type-system-discipline/SKILL.md)
+- [principle-attack-the-premise](skills/principle-attack-the-premise/SKILL.md)
+- [principle-explain-the-number](skills/principle-explain-the-number/SKILL.md)
+- [principle-test-behavior-not-implementation](skills/principle-test-behavior-not-implementation/SKILL.md)
 
 ### Cursor plugin ports
 
@@ -55,6 +58,7 @@ which comes from [thermos](https://github.com/cursor/plugins/tree/main/thermos).
 - [architect](skills/architect/SKILL.md)
 - [arena](skills/arena/SKILL.md)
 - [automate-me](skills/automate-me/SKILL.md)
+- [benchmark-checklist](skills/benchmark-checklist/SKILL.md)
 - [blast-radius](skills/blast-radius/SKILL.md)
 - [bro](skills/bro/SKILL.md)
 - [create-verification-skill](skills/create-verification-skill/SKILL.md)
@@ -69,6 +73,7 @@ which comes from [thermos](https://github.com/cursor/plugins/tree/main/thermos).
 - [reflect](skills/reflect/SKILL.md)
 - [setup-pstack](skills/setup-pstack/SKILL.md)
 - [show-me-your-work](skills/show-me-your-work/SKILL.md)
+- [statechart](skills/statechart/SKILL.md)
 - [swarm](skills/swarm/SKILL.md)
 - [tdd](skills/tdd/SKILL.md)
 - [teach](skills/teach/SKILL.md)
@@ -82,8 +87,22 @@ The principle skills also come from pstack. All imports preserve local Codex
 adaptations and supporting files. Each imported skill includes its upstream
 MIT license: pstack, copyright 2026 Lauren Tan; thermos, copyright 2026 Cursor.
 
-Some workflows still refer to Cursor tools, transcripts, or other skills.
-Those dependencies must be available to use those workflows.
+The 2026-10-29 refresh imports `poteto-mode`, all 24 `principle-*` skills,
+`statechart`, and the required `benchmark-checklist` from
+[Cursor source revision 1ba91fc](https://github.com/cursor/plugins/tree/1ba91fc25c0977741dd0e267849e6234b037ed0a/pstack/skills).
+It also ports `setup-pstack` to a Codex role file.
+
+The poteto-mode [Codex runtime rules](skills/poteto-mode/references/codex.md)
+replace Cursor-only tool calls, model defaults, transcript paths, cloud VM
+assumptions, and loop commands. Existing explicit-invocation metadata remains.
+Routed sibling skills use these rules while poteto-mode is active. Other ports
+can still require tools or skills named in their own instructions when used alone.
+
+`statechart` includes its launcher, checker, and test corpus. The launcher needs
+Node 22.18 to 22.x, Node 23.6 or later, Bun 1.1.5 or later, or Deno 2.0 or later.
+The checker needs TLC and Java. It installs pinned versions through `mise` when
+available, or reads `TLA2TOOLS` and `JAVA` for an existing installation. See
+[the statechart instructions](skills/statechart/SKILL.md) for details.
 
 ## Install one skill
 
@@ -95,5 +114,5 @@ npx skills add thiskevinwang/skills --skill graph-this-out
 gh skill install thiskevinwang/skills graph-this-out
 ```
 
-After installation, start a new Codex task or restart Codex if the skill does
-not appear immediately.
+Installed skills are available on the next Codex turn. If a client does not
+refresh its skill list, start a new chat or restart that client.

@@ -127,16 +127,16 @@ Append new candidate learnings here during or after babysitting when they look t
 - Skip when: The finding asks to broaden a narrow error condition (a specific
   `errno`, error code, or status class) into a catch-all, and that narrowness
   encodes a real distinction. The canonical shape is a dependency fallback
-  gated on `ENOENT`: "binary is not installed" is a different situation from
+  gated on `ENOENT`: "executable is not installed" is a different situation from
   "the command ran and failed". Retrying on any non-zero exit would re-run a
   legitimate failure (not found, expired auth, network) against the fallback
   and then report the fallback's error, hiding the true one.
 - Do not skip when: The narrow condition misses a case in the SAME category
-  (another "binary unusable" errno such as `EACCES`, another transport-level
+  (another "executable unusable" errno such as `EACCES`, another transport-level
   failure), the unhandled path loses data or leaves partial state, or the retry
   is idempotent AND the original error is still surfaced.
 - Example signal: "only retries when X fails with ENOENT … never tries the
   fallback even when a working Y exists", pointing at code whose fallback
   exists for a missing dependency rather than a failed operation.
-- Source: one CLI-rename PR whose fallback existed for a missing binary rather
+- Source: one CLI-rename PR whose fallback existed for a missing executable rather
   than a failed command.

@@ -1,65 +1,52 @@
 ---
 name: setup-pstack
-description: Configure which models pstack uses per role. Detects your available models and writes an always-applied rule that overrides the skill defaults. Use for /setup-pstack, "configure pstack models", or changing pstack's model choices.
+description: Configure optional pstack model choices per role in Codex. Use for $setup-pstack or requests to change pstack delegate models.
 ---
 
 # Setup pstack
 
-Write `~/.cursor/rules/pstack-models.mdc`, an always-applied rule that sets pstack's model per role. The skills read it and fall back to their inline defaults when a line is absent, so this is an override layer, not a requirement.
+Write `${CODEX_HOME:-$HOME/.codex}/pstack-models.md`. The poteto-mode Codex adapter reads this optional file before delegation. It is not an always-applied rule and does not change global Codex settings.
 
-## Steps
+## Detect and read
 
-### 1. Detect available models
+Inspect the model IDs and reasoning levels accepted by this session's subagent tools. Those schemas are the source for choices. Do not translate Cursor model IDs into guessed Codex IDs. If no explicit model choices are exposed, use parent inheritance and state that model selection is unavailable.
 
-Enumerate the model slugs you can pass to a `Task` subagent in this session; that is the dependable source. If Cursor also exposes a models API or CLI that lists the user's entitled models, prefer it for completeness. If you cannot detect any, ask the user to paste the slugs they have access to. Never write a real slug you have not confirmed is available. The aliases `inherit-parent` and `auto` are always valid even though they are not detected slugs.
+Read the existing role file before editing it. Preserve roles the user did not ask to change. Without a file, start every role on `inherit-parent`.
 
-### 2. Load current state
+## Choose
 
-The default role-to-model mapping is the rule shape shown in step 5 below. If `~/.cursor/rules/pstack-models.mdc` already exists, read it and treat its values as the current choices. Otherwise start from those defaults.
+Apply model choices the user already gave. Otherwise show the current role choices and ask which to change. Offer only confirmed IDs, `inherit-parent`, and `auto`. The aliases mean omit model arguments. They are never sent as literal model IDs.
 
-### 3. Map and confirm
+Panel roles take a comma-separated list. Each entry counts as one reviewer, including repeated inheritance entries. A panel on one family provides separate reviews, not evidence across model families. The arena cross-judge pool is a selection pool, not a reviewer count.
 
-Show every role with its current model, marking any real slug not in the detected set as needing a choice. Ask whether to accept as-is or change specific roles, offering the detected models plus `inherit-parent` and `auto` (both mean: this role runs on the parent chat model, which is how Auto users stay on Auto) as the options. Prefer AskQuestion over free text. For panel roles (how critics, arena runners, architect runners, interrogate reviewers) the value is a list, and one subagent runs per entry, alias entries included, so the list length sets the count. `arena cross-judge pool` is also a list, but Arena selects one value from it whose model family differs from the parent's when possible. `swarm workers` is the default model for every worker unless a race or comparison assigns another model per arm.
+Use these role labels when needed:
 
-### 4. Validate
+- `feature, refactoring`
+- `bug-fix`
+- `perf-issue`
+- `hillclimb`
+- `judgment and prose`
+- `hardest tasks`
+- `how explorer`, `how explainer`, `how critics`
+- `why investigators`, `why synthesizer`
+- `reflect tooling`, `reflect judgment, divergent, synthesizer`
+- `arena runners`, `arena cross-judge pool`
+- `swarm workers`
+- `architect runners`
+- `interrogate reviewers`
 
-Every real slug written must be in the detected set; `inherit-parent` and `auto` always pass. If a chosen real slug is not available, stop and ask again. A rule pointing at a model the user cannot use breaks every delegation that reads it.
+## Validate and write
 
-### 5. Write the rule
+Validate each real model ID against the current tool schema. Use a separate `reasoning effort for <role>` line only when the user chose a supported level. Do not encode effort or speed in a model ID. If the tool requires fresh context for an override, give that context the complete brief.
 
-Write `~/.cursor/rules/pstack-models.mdc` with `alwaysApply: true` and one line per role, using the same labels poteto-mode uses. Overwrite the whole file so re-runs stay idempotent. Shape:
+Write the role file after choices are known. Retain unmodified roles. Example:
 
-```
----
-description: pstack per-role model choices (overrides skill defaults)
-alwaysApply: true
----
-# pstack model configuration. One line per role. Delete a line to fall back to the skill default.
-# `inherit-parent` or `auto` as a value: the role runs on the parent chat model (omit Task `model`). Alias entries in a panel list still count toward its fan-out.
-feature, refactoring: grok-4.6-fast-xhigh
-bug-fix: claude-fable-5-1-thinking-max
-perf-issue: claude-fable-5-1-thinking-max
-hillclimb: claude-fable-5-1-thinking-max
-judgment and prose: claude-fable-5-1-thinking-max
-hardest tasks: claude-fable-5-1-thinking-max
-how explorer: grok-4.6-fast-xhigh
-how explainer: claude-fable-5-1-thinking-max
-how critics: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-why investigators: grok-4.6-fast-xhigh
-why synthesizer: claude-fable-5-1-thinking-max
-reflect tooling: gpt-5.6-sol-max
-reflect judgment, divergent, synthesizer: claude-fable-5-1-thinking-max
-arena runners: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-arena cross-judge pool: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-swarm workers: grok-4.6-fast-xhigh
-architect runners: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
-interrogate reviewers: claude-fable-5-1-thinking-max, gpt-5.6-sol-max, grok-4.6-fast-xhigh, claude-opus-5-thinking-xhigh
+```text
+# pstack model choices for Codex. Missing roles inherit the parent.
+feature, refactoring: inherit-parent
+judgment and prose: inherit-parent
+how critics: inherit-parent, inherit-parent
+swarm workers: inherit-parent
 ```
 
-### 6. Confirm
-
-Tell the user the rule was written and that it applies to new sessions. Re-running this skill updates it.
-
-### 7. Offer a verification skill (optional)
-
-Check whether the project has a way to drive the real app for proof (a `verify-*` skill, or an existing harness). If not, offer once: "want a project-local verification skill, so agents can drive the app the way a user does and prove changes work? I can generate one with /create-verification-skill." On yes, invoke `/create-verification-skill` (resolves wherever pstack is installed — workspace, user, or plugin). On no, move on without pushing.
+Report the path and changed roles. The next poteto-mode delegation reads the file. This does not make Cursor-only sibling skills native Codex workflows outside the poteto-mode adapter.

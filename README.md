@@ -14,7 +14,6 @@ gh skill install thiskevinwang/skills
 
 ## Available skills
 
-- [graph-this-out](skills/graph-this-out/SKILL.md): Map work as a dependency graph.
 - [go-callgraph](skills/go-callgraph/SKILL.md): Build and display Go call graphs.
 - [create-quiz](skills/create-quiz/SKILL.md): Create a quiz and answer key with source citations.
 - [quiz-me](skills/quiz-me/SKILL.md): Learn concepts with one question at a time.
@@ -106,12 +105,12 @@ available, or reads `TLA2TOOLS` and `JAVA` for an existing installation. See
 
 ## Install one skill
 
-Replace `graph-this-out` with any skill name listed above.
+Replace `go-callgraph` with any skill name listed above.
 
 ```sh
-npx skills add thiskevinwang/skills --skill graph-this-out
+npx skills add thiskevinwang/skills --skill go-callgraph
 # or
-gh skill install thiskevinwang/skills graph-this-out
+gh skill install thiskevinwang/skills go-callgraph
 ```
 
 Installed skills are available on the next Codex turn. If a client does not
